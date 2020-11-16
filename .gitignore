@@ -1,6 +1,12 @@
 *.pyc
 *.egg-info
+.eggs*
 exports.sh
 run*
 build/
 dist/
+venv/
+.venv/
+env/
+*.zip
+.vscode
