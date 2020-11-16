@@ -32,7 +32,7 @@ class GroupMeBot(object):
 
         headers = {'content-type': 'application/json'}
 
-        if self.bot_id not in (1, "1"):
+        if self.bot_id not in (1, "1", ''):
             r = requests.post("https://api.groupme.com/v3/bots/post",
                               data=json.dumps(template), headers=headers)
             if r.status_code != 202:
@@ -57,7 +57,7 @@ class SlackBot(object):
 
         headers = {'content-type': 'application/json'}
 
-        if self.webhook_url not in (1, "1"):
+        if self.webhook_url not in (1, "1", ''):
             r = requests.post(self.webhook_url,
                               data=json.dumps(template), headers=headers)
 
@@ -83,7 +83,7 @@ class DiscordBot(object):
 
         headers = {'content-type': 'application/json'}
 
-        if self.webhook_url not in (1, "1"):
+        if self.webhook_url not in (1, "1", ''):
             r = requests.post(self.webhook_url,
                               data=json.dumps(template), headers=headers)
             if r.status_code != 204:
@@ -297,8 +297,7 @@ def bot_main(function):
         len(str(discord_webhook_url)) <= 1):
         #Ensure that there's info for at least one messaging platform,
         #use length of str in case of blank but non null env variable
-        raise Exception("No messaging platform info provided. Be sure one of BOT_ID,\
-                        SLACK_WEBHOOK_URL, or DISCORD_WEBHOOK_URL env variables are set")
+        raise Exception("No messaging platform info provided. Be sure one of BOT_ID, SLACK_WEBHOOK_URL, or DISCORD_WEBHOOK_URL env variables are set")
 
     league_id = os.environ["LEAGUE_ID"]
 
