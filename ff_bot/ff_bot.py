@@ -327,7 +327,7 @@ def get_waiver_report(league, faab):
     report.reverse()
 
     if not report:
-        report += ['No waiver transactions']
+        text += ['No waiver transactions']
     else:
         text = ['Waiver Report %s: ' % today] + report
 
@@ -673,10 +673,9 @@ if __name__ == '__main__':
     sched.add_job(bot_main, 'cron', ['get_standings'], id='standings',
                   day_of_week='wed', hour=12, minute=1, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
-    if daily_waiver:
-        sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
-                      day_of_week='mon, tue, wed, thu, fri, sat, sun', hour=12, minute=27, start_date=ff_start_date, end_date=ff_end_date,
-                      timezone=my_timezone, replace_existing=True)
+    sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
+                  day_of_week='mon, tue, wed, thu, fri, sat, sun', hour=12, minute=30, start_date=ff_start_date, end_date=ff_end_date,
+                  timezone=my_timezone, replace_existing=True)
 
     sched.add_job(bot_main, 'cron', ['get_matchups'], id='matchups',
                   day_of_week='thu', hour=19, minute=30, start_date=ff_start_date, end_date=ff_end_date,
