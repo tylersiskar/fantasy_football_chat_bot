@@ -671,7 +671,7 @@ if __name__ == '__main__':
                   day_of_week='tue', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_standings'], id='standings',
-                  day_of_week='wed', hour=12, minute=1, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='wed', hour=12, minute=33, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
                   day_of_week='mon, tue, wed, thu, fri, sat, sun', hour=12, minute=30, start_date=ff_start_date, end_date=ff_end_date,
