@@ -592,8 +592,8 @@ def bot_main(function):
         text = get_power_rankings(league)
     # elif function=="get_expected_win":
     #     text = get_expected_win(league)
-    # elif function=="get_waiver_report":
-    #     text = get_waiver_report(league)
+    elif function == "get_waiver_report":
+        text = get_waiver_report(league)
     elif function == "get_trophies":
         text = get_trophies(league)
     elif function == "get_standings":
