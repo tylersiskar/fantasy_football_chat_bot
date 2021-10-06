@@ -568,8 +568,7 @@ def bot_main(function):
         print(get_standings(league, top_half_scoring))
         print(get_power_rankings(league))
         print(get_monitor(league))
-        if waiver_report and swid != '{1}' and espn_s2 != '1':
-            print(get_waiver_report(league, faab))
+        print(get_waiver_report(league, faab))
         function = "get_final"
         # bot.send_message("Testing")
         # slack_bot.send_message("Testing")
@@ -598,8 +597,7 @@ def bot_main(function):
         text = get_trophies(league)
     elif function == "get_standings":
         text = get_standings(league, top_half_scoring)
-        if waiver_report and swid != '{1}' and espn_s2 != '1':
-            text += '\n\n' + get_waiver_report(league, faab)
+        text += '\n\n' + get_waiver_report(league, faab)
     elif function == "get_final":
         # on Tuesday we need to get the scores of last week
         week = league.current_week - 1
@@ -674,7 +672,7 @@ if __name__ == '__main__':
                   day_of_week='wed', hour=12, minute=33, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
-                  day_of_week='mon, tue, wed, thu, fri, sat, sun', hour=12, minute=30, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='mon, tue, wed, thu, fri, sat, sun', hour=12, minute=37, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
 
     sched.add_job(bot_main, 'cron', ['get_matchups'], id='matchups',
