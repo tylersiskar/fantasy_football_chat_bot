@@ -605,7 +605,7 @@ def bot_main(function):
         week = league.current_week - 1
         text = "Final " + get_scoreboard_short(league, week=week)
         text = text + "\n\n" + get_trophies(league, week=week)
-    elif function == "get_waiver_report" and swid != '{1}' and espn_s2 != '1':
+    elif function == "get_waiver_report":
         text = get_waiver_report(league, faab)
     elif function == "init":
         try:
@@ -675,7 +675,7 @@ if __name__ == '__main__':
                   timezone=my_timezone, replace_existing=True)
     if daily_waiver:
         sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
-                      day_of_week='mon, tue, wed, thu, fri, sat, sun', hour=12, minute=15, start_date=ff_start_date, end_date=ff_end_date,
+                      day_of_week='mon, tue, wed, thu, fri, sat, sun', hour=12, minute=20, start_date=ff_start_date, end_date=ff_end_date,
                       timezone=my_timezone, replace_existing=True)
 
     sched.add_job(bot_main, 'cron', ['get_matchups'], id='matchups',
