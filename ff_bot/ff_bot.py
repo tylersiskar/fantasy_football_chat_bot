@@ -592,7 +592,7 @@ def bot_main(function):
     # elif function=="get_expected_win":
     #     text = get_expected_win(league)
     elif function == "get_waiver_report":
-        text = get_waiver_report(league)
+        text = get_waiver_report(league, faab)
     elif function == "get_trophies":
         text = get_trophies(league)
     elif function == "get_standings":
@@ -672,7 +672,7 @@ if __name__ == '__main__':
                   day_of_week='wed', hour=12, minute=33, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
-                  day_of_week='mon, tue, wed, thu, fri, sat, sun', hour=12, minute=37, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='mon, tue, wed, thu, fri, sat, sun', hour=12, minute=40, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
 
     sched.add_job(bot_main, 'cron', ['get_matchups'], id='matchups',
