@@ -300,7 +300,7 @@ def get_scoring_distr(league):
         scatters.append(temp)
         ind += 1
     # plotting
-    plt.title("League Scores Week 4 (centered at league avg)")
+    plt.title("League Scores Week" + str(league.current_week - 1) + "(centered at league avg)")
     plt.xlabel("Points for (+/- average)")
     plt.plot([min(nx), 0, max(nx)], [min(ny), 0, max(ny)])
     plt.ylabel("Points against (+/- average)")
