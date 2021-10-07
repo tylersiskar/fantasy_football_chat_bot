@@ -5,6 +5,8 @@ import random
 from datetime import date
 from apscheduler.schedulers.blocking import BlockingScheduler
 from espn_api.football import League
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 class GroupMeException(Exception):
@@ -27,16 +29,37 @@ class GroupMeBot(object):
     def __repr__(self):
         return "GroupMeBot(%s)" % self.bot_id
 
-    def send_message(self, text):
+    def send_image(self, text=''):
+        data = open('./test.png', 'rb').read()
+        res = requests.post(
+            url='https://image.groupme.com/pictures',
+            data=data,
+            headers={'Content-Type': 'image/png',
+                     'X-Access-Token': 'W9Rta60fyPQQgCD37jVlx85GHvftqyKjg8G2nOGu'})
+
+        self.send_message(text, res.content.decode().split('"url":')[1].split(",")[0].split('"')[1])
+
+    def send_message(self, text, img=''):
         # Sends a message to the chatroom
-        template = {
-            "bot_id": self.bot_id,
-            "text": text,
-            "attachments": []
-        }
+        if img:
+            template = {
+                "bot_id": self.bot_id,
+                "text": text,
+                "attachments": [
+                    {
+                        "type": 'image',
+                        "url": img
+                    }
+                ]
+            }
+        else:
+            template = {
+                "bot_id": self.bot_id,
+                "text": text,
+                "attachments": []
+            }
 
         headers = {'content-type': 'application/json'}
-
         if self.bot_id not in (1, "1", ''):
             r = requests.post("https://api.groupme.com/v3/bots/post",
                               data=json.dumps(template), headers=headers)
@@ -234,6 +257,59 @@ def scan_roster(lineup, team):
         report = [s.lstrip()]
 
     return report
+
+
+def get_scoring_distr(league):
+    box = league.box_scores(league.current_week - 1)
+
+    total = 0
+    team_matchup_arr = []
+    for i in box:
+        team_matchup_arr.append(
+            {
+                "name": i.home_team,
+                "for": i.home_score,
+                "against": i.away_score,
+                "win": i.home_score > i.away_score
+            }
+        )
+        team_matchup_arr.append(
+            {
+                "name": i.away_team,
+                "for": i.away_score,
+                "against": i.home_score,
+                "win": i.away_score > i.away_score
+            }
+        )
+        add = i.away_score + i.home_score
+        total += add
+    average = total / 12
+    nx = []
+    ny = []
+    colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple',
+              'pink', 'cyan', 'gray', 'black', 'lime', 'brown']
+    ind = 0
+    scatters = []
+    for i in team_matchup_arr:
+        tempx = i["for"] - average
+        tempy = i["against"] - average
+        nx.append(tempx)
+        ny.append(tempy)
+        temp = plt.scatter(tempx, tempy, color=colors[ind])
+        plt.text(tempx+.03, tempy+.03, i["name"], fontsize=9)
+        scatters.append(temp)
+        ind += 1
+    # plotting
+    plt.title("League Scores Week 4 (centered at league avg)")
+    plt.xlabel("Points for (+/- average)")
+    plt.plot([min(nx), 0, max(nx)], [min(ny), 0, max(ny)])
+    plt.ylabel("Points against (+/- average)")
+    plt.grid()
+    plt.savefig('./test.png')
+    # plt.fill_between([min(nx), 0, max(nx)], [0, max(ny)/2, max(ny)],
+    #                  facecolor="orange",  # The fill color
+    #                  color='blue',       # The outline color
+    #                  alpha=0.2)          # Transparency of the fill
 
 
 def scan_inactives(lineup, team):
@@ -566,6 +642,7 @@ def bot_main(function):
         print(get_power_rankings(league))
         print(get_scoreboard_short(league))
         print(get_standings(league, top_half_scoring))
+        print(get_scoring_distr(league))
         print(get_power_rankings(league))
         print(get_monitor(league))
         print(get_waiver_report(league, faab))
@@ -597,6 +674,9 @@ def bot_main(function):
         text = get_trophies(league)
     elif function == "get_standings":
         text = get_standings(league, top_half_scoring)
+    elif function == "get_scoring_distr":
+        get_scoring_distr(league)
+        bot.send_image("Points against vs. Points For Week " + str(league.current_week - 1))
     elif function == "get_final":
         # on Tuesday we need to get the scores of last week
         week = league.current_week - 1
@@ -674,6 +754,9 @@ if __name__ == '__main__':
                   day_of_week='mon, tue, wed, thu, fri, sat, sun', hour=12, minute=1, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
 
+    sched.add_job(bot_main, 'cron', ['get_scoring_distr'], id='scoring_distr',
+                  day_of_week='thu', hour=19, minute=58, start_date=ff_start_date, end_date=ff_end_date,
+                  timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_matchups'], id='matchups',
                   day_of_week='thu', hour=19, minute=30, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=game_timezone, replace_existing=True)
