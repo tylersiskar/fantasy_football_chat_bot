@@ -300,7 +300,7 @@ def get_scoring_distr(league):
         scatters.append(temp)
         ind += 1
     # plotting
-    plt.title("League Scores Week" + str(league.current_week - 1) + "(centered at league avg)")
+    plt.title("League Scores Week " + str(league.current_week - 1) + "(centered at league avg)")
     plt.xlabel("Points for (+/- average)")
     plt.plot([min(nx), 0, max(nx)], [min(ny), 0, max(ny)])
     plt.ylabel("Points against (+/- average)")
@@ -755,7 +755,7 @@ if __name__ == '__main__':
                   timezone=my_timezone, replace_existing=True)
 
     sched.add_job(bot_main, 'cron', ['get_scoring_distr'], id='scoring_distr',
-                  day_of_week='thu', hour=20, minute=3, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='tue', hour=10, minute=0, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_matchups'], id='matchups',
                   day_of_week='thu', hour=19, minute=30, start_date=ff_start_date, end_date=ff_end_date,
