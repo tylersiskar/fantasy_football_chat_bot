@@ -755,7 +755,7 @@ if __name__ == '__main__':
                   timezone=my_timezone, replace_existing=True)
 
     sched.add_job(bot_main, 'cron', ['get_scoring_distr'], id='scoring_distr',
-                  day_of_week='thu', hour=19, minute=58, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='thu', hour=20, minute=3, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_matchups'], id='matchups',
                   day_of_week='thu', hour=19, minute=30, start_date=ff_start_date, end_date=ff_end_date,
