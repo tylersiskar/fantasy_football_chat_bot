@@ -7,6 +7,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from espn_api.football import League
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 
 
 class GroupMeException(Exception):
@@ -305,11 +306,28 @@ def get_scoring_distr(league):
     plt.plot([min(nx), 0, max(nx)], [min(ny), 0, max(ny)])
     plt.ylabel("Points against (+/- average)")
     plt.grid()
+
+    x = np.arange(min(nx) - 10, max(nx) + 10, 0.1)
+
+    # plotting the lines
+    a1 = x
+    plt.fill_between(x, a1, 0, where=x > 0, color='green',
+                     alpha=0.3)
+    plt.fill_betweenx(x, a1, 0, where=a1 < 0, color='green',
+                      alpha=0.3)
+    plt.fill_between(x, a1, 0, where=x < 0, color='red',
+                     alpha=0.3)
+    plt.fill_betweenx(x, a1, 0, where=a1 > 0, color='red',
+                      alpha=0.3)
+
+    legend_elements = [Patch(facecolor='red', edgecolor='r', alpha=0.3,
+                             label='Unlucky Loss'),
+                       Patch(facecolor='green', edgecolor='g', alpha=0.3,
+                             label='Lucky Win')]
+
+# Create the figure
+    plt.legend(handles=legend_elements, loc='best')
     plt.savefig('./test.png')
-    # plt.fill_between([min(nx), 0, max(nx)], [0, max(ny)/2, max(ny)],
-    #                  facecolor="orange",  # The fill color
-    #                  color='blue',       # The outline color
-    #                  alpha=0.2)          # Transparency of the fill
 
 
 def scan_inactives(lineup, team):
