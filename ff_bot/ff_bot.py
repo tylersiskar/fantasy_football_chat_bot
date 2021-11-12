@@ -213,6 +213,14 @@ def get_projected_total(lineup):
     return total_projected
 
 
+def my_get_projected_total(lineup):
+    total_projected = 0
+    for i in lineup:
+        if i.slot_position != 'BE' and i.slot_position != 'IR':
+            total_projected += i.projected_points
+    return total_projected
+
+
 def all_played(lineup):
     for i in lineup:
         if i.slot_position != 'BE' and i.slot_position != 'IR' and i.game_played < 100:
@@ -258,6 +266,61 @@ def scan_roster(lineup, team):
         report = [s.lstrip()]
 
     return report
+
+
+def get_proj_distr(league):
+    box = league.box_scores(league.current_week - 1)
+
+    team_matchup_arr = []
+    x = []
+    y = []
+    y1 = []
+    for i in box:
+        x.append(i.home_team.team_abbrev)
+        x.append(i.away_team.team_abbrev)
+        y.append(i.home_score)
+        y.append(i.away_score)
+        y1.append(my_get_projected_total(i.home_lineup))
+        y1.append(my_get_projected_total(i.away_lineup))
+        team_matchup_arr.append(
+            {
+                "name": i.home_team,
+                "for": i.home_score,
+                "projected": my_get_projected_total(i.home_lineup)
+            }
+        )
+        team_matchup_arr.append(
+            {
+                "name": i.away_team,
+                "for": i.away_score,
+                "projected": my_get_projected_total(i.away_lineup)
+            }
+        )
+    # fig = plt.figure()
+    # ax = fig.add_axes([0, 0, 1, 1])
+    # langs = ['C', 'C++', 'Java', 'Python', 'PHP']
+    # students = [23, 17, 35, 29, 12]
+    # ax.bar(x, y, y1)
+    labels = x
+    actual = y
+    projected = y1
+
+    xl = np.arange(len(labels))  # the label locations
+    width = 0.35  # the width of the bars
+
+    fig, ax = plt.subplots()
+    ax.bar(xl - width/2, actual, width, label='Actual')
+    ax.bar(xl + width/2, projected, width, label='Projected')
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_ylabel('Scores')
+    ax.set_title('Projected and Actual Scores by Team Week ' + str(league.current_week - 1))
+    ax.set_xticks(xl)
+    ax.set_xticklabels(labels)
+    ax.legend()
+
+    fig.tight_layout()
+    plt.savefig('./project.png')
 
 
 def get_scoring_distr(league):
@@ -661,6 +724,7 @@ def bot_main(function):
         print(get_scoreboard_short(league))
         print(get_standings(league, top_half_scoring))
         print(get_scoring_distr(league))
+        print(get_proj_distr(league))
         print(get_power_rankings(league))
         print(get_monitor(league))
         print(get_waiver_report(league, faab))
@@ -695,6 +759,9 @@ def bot_main(function):
     elif function == "get_scoring_distr":
         get_scoring_distr(league)
         bot.send_image("Points against vs. Points For Week " + str(league.current_week - 1))
+    elif function == "get_proj_distr":
+        get_proj_distr(league)
+        bot.send_image("Projected Vs Actual Points Week " + str(league.current_week - 1))
     elif function == "get_final":
         # on Tuesday we need to get the scores of last week
         week = league.current_week - 1
@@ -774,6 +841,10 @@ if __name__ == '__main__':
 
     sched.add_job(bot_main, 'cron', ['get_scoring_distr'], id='scoring_distr',
                   day_of_week='tue', hour=10, minute=0, start_date=ff_start_date, end_date=ff_end_date,
+                  timezone=my_timezone, replace_existing=True)
+
+    sched.add_job(bot_main, 'cron', ['get_proj_distr'], id='proj_distr',
+                  day_of_week='thu', hour=21, minute=10, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_matchups'], id='matchups',
                   day_of_week='thu', hour=19, minute=30, start_date=ff_start_date, end_date=ff_end_date,
