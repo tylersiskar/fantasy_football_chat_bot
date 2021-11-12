@@ -30,8 +30,8 @@ class GroupMeBot(object):
     def __repr__(self):
         return "GroupMeBot(%s)" % self.bot_id
 
-    def send_image(self, text=''):
-        data = open('./test.png', 'rb').read()
+    def send_image(self, text='', img='./test.png'):
+        data = open(img, 'rb').read()
         res = requests.post(
             url='https://image.groupme.com/pictures',
             data=data,
@@ -761,7 +761,7 @@ def bot_main(function):
         bot.send_image("Points against vs. Points For Week " + str(league.current_week - 1))
     elif function == "get_proj_distr":
         get_proj_distr(league)
-        bot.send_image("Projected Vs Actual Points Week " + str(league.current_week - 1))
+        bot.send_image("Projected Vs Actual Points Week " + str(league.current_week - 1), './project.png')
     elif function == "get_final":
         # on Tuesday we need to get the scores of last week
         week = league.current_week - 1
@@ -844,7 +844,7 @@ if __name__ == '__main__':
                   timezone=my_timezone, replace_existing=True)
 
     sched.add_job(bot_main, 'cron', ['get_proj_distr'], id='proj_distr',
-                  day_of_week='thu', hour=21, minute=20, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='thu', hour=21, minute=23, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=game_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_matchups'], id='matchups',
                   day_of_week='thu', hour=19, minute=30, start_date=ff_start_date, end_date=ff_end_date,
